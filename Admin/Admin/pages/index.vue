@@ -19,7 +19,7 @@
           <label for="email" class="ml-16 text-sm font-normal text-black-600 ">Email</label>
           <div class="form-group">
             <input 
-            id="email" type="email" placeholder="User@gmail.com"  v-model="form.email" class="w-full mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ml-16 w-full max-w-[400px] p-1 text-sm required ">
+            id="email" type="email" placeholder="User@gmail.com"  v-model="form.email" class="mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ml-16 w-full max-w-[400px] p-1 text-sm required ">
             </div>
         </div>
         <!-- Input Sandi -->
@@ -33,7 +33,7 @@
             id="password"
             type="password"
             placeholder="********"
-            v-model="form.password" class="w-full mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ml-16 p-1 w-full max-w-[400px] text-sm required"/>
+            v-model="form.password" class="mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ml-16 p-1 w-full max-w-[400px] text-sm required"/>
         </div>
       </div>
         <!-- Tombol Login -->

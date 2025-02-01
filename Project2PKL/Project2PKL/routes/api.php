@@ -29,7 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/Buku', [BukuController::class, 'index']);
 Route::post('/Buku', [BukuController::class, 'store']);
-Route::put('/Buku/{id}',[BukuController::class, 'update']);
+Route::get('/Buku/{id_buku}', [BukuController::class, 'show']);
+Route::put('/Buku/{id_buku}',[BukuController::class, 'update']);
 Route::delete('/Buku/{id}', [BukuController::class, 'destroy']);
 Route::put('Buku/{id}/return', [BukuController::class, 'return']);
 

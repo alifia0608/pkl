@@ -14,15 +14,15 @@ class BukuController extends Controller
         $request->validate([
             'judul_buku' => 'required|string|max:255',
             'penerbit' => 'required|string|max:255',
-            'tanggal_pinjam' => 'required|date_format:d-m-Y',
+            'tanggal_pinjam' => 'required|date_format:Y-m-d',
         ]);
 
-        $tanggalPinjam = Carbon::createFromFormat('d-m-Y', $request->tanggal_pinjam)->format('Y-m-d');
+        // $tanggalPinjam = Carbon::createFromFormat('d-m-Y', $request->tanggal_pinjam)->format('Y-m-d');
 
         $buku = Buku::create([
             'judul_buku' => $request->judul_buku,
             'penerbit' => $request->penerbit,
-            'tanggal_pinjam' => $tanggalPinjam,
+            'tanggal_pinjam' => $request->tanggal_pinjam,
         ]);
 
         return response()->json([
@@ -30,15 +30,26 @@ class BukuController extends Controller
             'judul_buku' => $buku->judul_buku,
             'penerbit' => $buku->penerbit,
             'tanggal_pinjam' => $buku->tanggal_pinjam,
-            'tanggal_pengembalian' => $buku->tanggal_pengembalian,
+            // 'tanggal_pengembalian' => $buku->tanggal_pengembalian,
             'created_at' => $buku->created_at,
             'updated_at' => $buku->updated_at,
             'message' => 'Data buku berhasil ditambahkan!',
         ], 201);
     }
 
+    public function show($id_buku)
+    {
+        $buku = Buku::find($id_buku);
+        return response()->json([
+            'id_buku' => $buku->id_buku,
+            'judul_buku' => $buku->judul_buku,
+            'penerbit' => $buku->penerbit,
+            'tanggal_pinjam' => $buku->tanggal_pinjam,
+        ], 200);
+    }
+
     // Fungsi untuk memperbarui data buku
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_buku)
     {
         $request->validate([
             'judul_buku' => 'required|string|max:255',
@@ -46,7 +57,7 @@ class BukuController extends Controller
             'tanggal_pinjam' => 'required|date_format:Y-m-d',
         ]);
 
-        $buku = Buku::findOrFail($id);
+        $buku = Buku::findOrFail($id_buku);
 
         $buku->update([
             'judul_buku' => $request->judul_buku,
@@ -59,7 +70,7 @@ class BukuController extends Controller
             'judul_buku' => $buku->judul_buku,
             'penerbit' => $buku->penerbit,
             'tanggal_pinjam' => $buku->tanggal_pinjam,
-            'tanggal_pengembalian' => $buku->tanggal_pengembalian,
+            // 'tanggal_pengembalian' => $buku->tanggal_pengembalian,
             'updated_at' => $buku->updated_at,
             'message' => 'Data buku berhasil diperbarui!',
         ], 200);
@@ -95,9 +106,9 @@ class BukuController extends Controller
     }
 
     // Fungsi untuk mengembalikan buku
-    public function return(Request $request, $id)
+    public function return(Request $request, $id_buku)
     {
-        $buku = Buku::findOrFail($id);
+        $buku = Buku::findOrFail($id_buku);
 
         $tanggalPengembalian = $request->input('tanggal_pengembalian', Carbon::now()->format('Y-m-d'));
 
@@ -117,9 +128,9 @@ class BukuController extends Controller
 
     }
      // Fungsi untuk menghapus data buku
-     public function destroy($id)
+     public function destroy($id_buku)
      {
-         $buku = Buku::find($id);
+         $buku = Buku::find($id_buku);
 
          if (!$buku) {
              return response()->json([

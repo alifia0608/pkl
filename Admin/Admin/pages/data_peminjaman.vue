@@ -69,24 +69,22 @@
           </thead>
           <tbody>
           <tr
-            v-for="(data, index) in paginatedBooks"
-            :key="index"
+            v-for="(bukuku, index) in bukuku"
+            :key="bukuku.id_buku"
             :class="index === 5 ? 'border-1 ' : 'border-1 odd:bg-gray-300 even:bg-white'"
           >
-            <td class="border px-4 py-2">{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-            <td class="border px-4 py-2">{{ data.idBuku }}</td>
-            <td class="border px-4 py-2">{{ data.judulBuku }}</td>
-            <td class="border px-4 py-2">{{ data.penerbit }}</td>
-            <td class="border px-4 py-2">{{ data.waktuKembali }}</td>
+            <td class="border px-4 py-2">{{ index + 1 }}</td>
+            <td class="border px-4 py-2">{{ bukuku.id_buku }}</td>
+            <td class="border px-4 py-2">{{ bukuku.judul_buku }}</td>
+            <td class="border px-4 py-2">{{ bukuku.penerbit }}</td>
+            <td class="border px-4 py-2">{{ bukuku.tanggal_pinjam }}</td>
             <td class="border px-4 py-2">
               <div class="flex gap-3">
-                <button class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded text-xs flex items-center justify-center">
-                  <NuxtLink to="editdataform">
+                <button @click="() => $router.push('/editdataform/${bukuku.id_buku}')" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded text-xs flex items-center justify-center">
                     <img src="/public/img/pn.png" alt="" class="h-4 w-auto object-contain" />
-                  </NuxtLink>
-                </button>
+                </button> 
                 <button
-                  @click="deleteBook(index)"
+                  @click="deleteBuku(bukuku.id_buku)"
                   class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-xs flex items-center justify-center"
                 >
                   <img src="/public/img/smph.png" alt="" class="h-4 w-auto object-contain" />
@@ -135,52 +133,51 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      books: [
-        { idBuku: 226, judulBuku: "Malin Kundang", penerbit: "Elex Media Komputindo", waktuKembali: "12.30/01/10/2024" },
-        { idBuku: 227, judulBuku: "Dilan 1990", penerbit: "Airlangga Media", waktuKembali: "10.30/01/10/2024" },
-      ],
-      itemsPerPage: 10,
-      currentPage: 1,
-      searchQuery: "", // Query pencarian
-    };
-  },
-  computed: {
-    totalItems() {
-      return this.books.filter((book) =>
-        book.judulBuku.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        book.idBuku.toString().includes(this.searchQuery) ||
-        book.penerbit.toLowerCase().includes(this.searchQuery.toLowerCase())
-      ).length;
-    },
-    totalPages() {
-      return Math.ceil(this.totalItems / this.itemsPerPage);
-    },
-    paginatedBooks() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const filteredBooks = this.books.filter((book) =>
-        book.judulBuku.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        book.idBuku.toString().includes(this.searchQuery) ||
-        book.penerbit.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
-      return filteredBooks.slice(start, start + this.itemsPerPage);
-    },
-  },
-  methods: {
-    deleteBook(index) {
-      const actualIndex = (this.currentPage - 1) * this.itemsPerPage + index;
-      this.books.splice(actualIndex, 1);
-    },
-    changePage(direction) {
-      if (direction === "prev" && this.currentPage > 1) {
-        this.currentPage--;
-      } else if (direction === "next" && this.currentPage < this.totalPages) {
-        this.currentPage++;
-      }
-    },
-  },
+<script lang="ts" setup>
+    import axios from 'axios';
+    import { onMounted } from 'vue';
+
+  interface ApiResponse<T> {
+      message: string;
+      data: T;
+  }
+
+  interface buku {
+      id_buku: number;
+      judul_buku: string;
+      penerbit: string;
+      tanggal_peminjaman: string;
+  }
+
+  // State untuk menyimpan data produk
+  const bukuku = ref<buku[]>([]);
+
+  // Fungsi untuk fetch data dari API
+  const fetchBuku = async () => {
+    try {
+        const { $axios } = useNuxtApp();
+        const response = await axios.get('http://127.0.0.1:8000/api/Buku');
+        bukuku.value = response.data.data;
+        console.log('Data fetched:', response.data.data);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+    }
 };
+
+const deleteBuku = async (id_buku: number) => {
+        if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+            try {
+              const response = await axios.delete(`http://127.0.0.1:8000/api/Buku/${id_buku}`, {
+                });
+                // Setelah menghapus, fetch ulang data
+                await fetchBuku();
+                alert('Produk berhasil dihapus.');
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Terjadi kesalahan saat menghapus produk.');
+            }
+        }
+    };
+
+  onMounted(fetchBuku);
 </script>
